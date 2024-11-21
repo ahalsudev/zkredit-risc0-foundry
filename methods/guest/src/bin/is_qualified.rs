@@ -20,16 +20,19 @@ use risc0_zkvm::guest::env;
 
 fn main() {
     // Read the input data for this application.
-    let mut input_bytes = Vec::<u8>::new();
-    env::stdin().read_to_end(&mut input_bytes).unwrap();
+    let mut salary = Vec::<u8>::new();
+    env::stdin().read_to_end(&mut salary).unwrap();
     // Decode and parse the input
-    let number = <U256>::abi_decode(&input_bytes, true).unwrap();
+    let salary = <U256>::abi_decode(&salary, true).unwrap();
+
+    // Financing threshold
+    let threshold = <U256>::from(10000);
 
     // Run the computation.
-    // In this case, asserting that the provided number is even.
-    assert!(!number.bit(0), "number is not even");
+    // In this case, asserting that the provided salary is greater than threshold.
+    assert!(salary.ge(&threshold), "salary is not above threshold");
 
     // Commit the journal that will be received by the application contract.
     // Journal is encoded using Solidity ABI for easy decoding in the app contract.
-    env::commit_slice(number.abi_encode().as_slice());
+    env::commit_slice(salary.abi_encode().as_slice());
 }

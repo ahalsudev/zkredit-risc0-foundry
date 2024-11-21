@@ -23,15 +23,15 @@ use alloy::{
 use alloy_primitives::{Address, U256};
 use anyhow::{Context, Result};
 use clap::Parser;
-use methods::IS_EVEN_ELF;
+use methods::IS_QUALIFIED_ELF;
 use risc0_ethereum_contracts::encode_seal;
 use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts, VerifierContext};
 use url::Url;
 
-// `IEvenNumber` interface automatically generated via the alloy `sol!` macro.
+// `IqualifiedNumber` interface automatically generated via the alloy `sol!` macro.
 alloy::sol!(
     #[sol(rpc, all_derives)]
-    "../contracts/IEvenNumber.sol"
+    "../contracts/IQualifiedBorrower.sol"
 );
 
 /// Arguments of the publisher CLI.
@@ -81,7 +81,7 @@ fn main() -> Result<()> {
         .prove_with_ctx(
             env,
             &VerifierContext::default(),
-            IS_EVEN_ELF,
+            IS_QUALIFIED_ELF,
             &ProverOpts::groth16(),
         )?
         .receipt;
@@ -97,17 +97,17 @@ fn main() -> Result<()> {
     // the number that was verified off-chain.
     let x = U256::abi_decode(&journal, true).context("decoding journal data")?;
 
-    // Construct function call: Using the IEvenNumber interface, the application constructs
-    // the ABI-encoded function call for the set function of the EvenNumber contract.
+    // Construct function call: Using the IqualifiedNumber interface, the application constructs
+    // the ABI-encoded function call for the set function of the qualifiedNumber contract.
     // This call includes the verified number, the post-state digest, and the seal (proof).
-    let contract = IEvenNumber::new(args.contract, provider);
+    let contract = IQualifiedBorrower::new(args.contract, provider);
     let call_builder = contract.set(x, seal.into());
 
     // Initialize the async runtime environment to handle the transaction sending.
     let runtime = tokio::runtime::Runtime::new()?;
 
     // Send transaction: Finally, send the transaction to the Ethereum blockchain,
-    // effectively calling the set function of the EvenNumber contract with the verified number and proof.
+    // effectively calling the set function of the qualifiedNumber contract with the verified number and proof.
     let pending_tx = runtime.block_on(call_builder.send())?;
     runtime.block_on(pending_tx.get_receipt())?;
 

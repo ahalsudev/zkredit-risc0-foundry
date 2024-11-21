@@ -20,31 +20,37 @@ import {RiscZeroCheats} from "risc0/test/RiscZeroCheats.sol";
 import {console2} from "forge-std/console2.sol";
 import {Test} from "forge-std/Test.sol";
 import {IRiscZeroVerifier} from "risc0/IRiscZeroVerifier.sol";
-import {EvenNumber} from "../contracts/EvenNumber.sol";
+import {QualifiedBorrower} from "../contracts/QualifiedBorrower.sol";
 import {Elf} from "./Elf.sol"; // auto-generated contract after running `cargo build`.
 
-contract EvenNumberTest is RiscZeroCheats, Test {
-    EvenNumber public evenNumber;
+contract QualifiedBorrowerTest is RiscZeroCheats, Test {
+    QualifiedBorrower public qualifiedLender;
 
     function setUp() public {
         IRiscZeroVerifier verifier = deployRiscZeroVerifier();
-        evenNumber = new EvenNumber(verifier);
-        assertEq(evenNumber.get(), 0);
+        qualifiedLender = new QualifiedBorrower(verifier);
+        assertEq(qualifiedLender.get(), 0);
     }
 
-    function test_SetEven() public {
-        uint256 number = 12345678;
-        (bytes memory journal, bytes memory seal) = prove(Elf.IS_EVEN_PATH, abi.encode(number));
+    function test_SetQualified() public {
+        uint256 salary = 11000;
+        (bytes memory journal, bytes memory seal) = prove(
+            Elf.IS_QUALIFIED_PATH,
+            abi.encode(salary)
+        );
 
-        evenNumber.set(abi.decode(journal, (uint256)), seal);
-        assertEq(evenNumber.get(), number);
+        qualifiedLender.set(abi.decode(journal, (uint256)), seal);
+        assertEq(qualifiedLender.get(), salary);
     }
 
-    function test_SetZero() public {
-        uint256 number = 0;
-        (bytes memory journal, bytes memory seal) = prove(Elf.IS_EVEN_PATH, abi.encode(number));
+    function test_SetUnqualified() public {
+        uint256 salary = 9000;
+        (bytes memory journal, bytes memory seal) = prove(
+            Elf.IS_QUALIFIED_PATH,
+            abi.encode(salary)
+        );
 
-        evenNumber.set(abi.decode(journal, (uint256)), seal);
-        assertEq(evenNumber.get(), number);
+        qualifiedLender.set(abi.decode(journal, (uint256)), seal);
+        assertEq(qualifiedLender.get(), salary);
     }
 }

@@ -17,37 +17,37 @@ include!(concat!(env!("OUT_DIR"), "/methods.rs"));
 
 #[cfg(test)]
 mod tests {
-    use alloy_primitives::U256;
-    use alloy_sol_types::SolValue;
     use risc0_zkvm::{default_executor, ExecutorEnv};
 
     #[test]
-    fn proves_even_number() {
-        let even_number = U256::from(1304);
-
+    fn proves_qualified_borrower() {
+        let salary: u32 = 12000;
         let env = ExecutorEnv::builder()
-            .write_slice(&even_number.abi_encode())
+            .write(&salary)
+            .unwrap()
             .build()
             .unwrap();
 
         // NOTE: Use the executor to run tests without proving.
-        let session_info = default_executor().execute(env, super::IS_EVEN_ELF).unwrap();
-
-        let x = U256::abi_decode(&session_info.journal.bytes, true).unwrap();
-        assert_eq!(x, even_number);
+        let _session_info = default_executor()
+            .execute(env, super::IS_QUALIFIED_ELF)
+            .unwrap();
     }
 
     #[test]
-    #[should_panic(expected = "number is not even")]
-    fn rejects_odd_number() {
-        let odd_number = U256::from(75);
+    #[should_panic(expected = "salary is not above threshold")]
+    fn rejects_unqualified_borrower() {
+        let salary: u32 = 9000;
 
         let env = ExecutorEnv::builder()
-            .write_slice(&odd_number.abi_encode())
+            .write(&salary)
+            .unwrap()
             .build()
             .unwrap();
 
         // NOTE: Use the executor to run tests without proving.
-        default_executor().execute(env, super::IS_EVEN_ELF).unwrap();
+        let _failed = default_executor()
+            .execute(env, super::IS_QUALIFIED_ELF)
+            .unwrap();
     }
 }
