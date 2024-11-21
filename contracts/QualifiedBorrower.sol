@@ -35,7 +35,7 @@ contract QualifiedBorrower {
 
     /// @notice A number that is guaranteed, by the RISC Zero zkVM, to be even.
     ///         It can be set by calling the `set` function.
-    uint256 public salary;
+    uint256 public salary = 0;
 
     /// @notice Initialize the contract, binding it to a specified RISC Zero verifier.
     constructor(IRiscZeroVerifier _verifier) {

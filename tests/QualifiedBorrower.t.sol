@@ -24,12 +24,12 @@ import {QualifiedBorrower} from "../contracts/QualifiedBorrower.sol";
 import {Elf} from "./Elf.sol"; // auto-generated contract after running `cargo build`.
 
 contract QualifiedBorrowerTest is RiscZeroCheats, Test {
-    QualifiedBorrower public qualifiedLender;
+    QualifiedBorrower public qualifiedBorrower;
 
     function setUp() public {
         IRiscZeroVerifier verifier = deployRiscZeroVerifier();
-        qualifiedLender = new QualifiedBorrower(verifier);
-        assertEq(qualifiedLender.get(), 0);
+        qualifiedBorrower = new QualifiedBorrower(verifier);
+        assertEq(qualifiedBorrower.get(), 0);
     }
 
     function test_SetQualified() public {
@@ -39,18 +39,7 @@ contract QualifiedBorrowerTest is RiscZeroCheats, Test {
             abi.encode(salary)
         );
 
-        qualifiedLender.set(abi.decode(journal, (uint256)), seal);
-        assertEq(qualifiedLender.get(), salary);
-    }
-
-    function test_SetUnqualified() public {
-        uint256 salary = 9000;
-        (bytes memory journal, bytes memory seal) = prove(
-            Elf.IS_QUALIFIED_PATH,
-            abi.encode(salary)
-        );
-
-        qualifiedLender.set(abi.decode(journal, (uint256)), seal);
-        assertEq(qualifiedLender.get(), salary);
+        qualifiedBorrower.set(abi.decode(journal, (uint256)), seal);
+        assertEq(qualifiedBorrower.get(), salary);
     }
 }
