@@ -1,2 +1,2 @@
 # ZKredit
-Code for ZKredit - A RISC Zero application integrated with Ethereum using Foundry - WIP
+Code for ZKredit - A risc0-based credit assessment application integrated with Ethereum using Foundry - WIP
